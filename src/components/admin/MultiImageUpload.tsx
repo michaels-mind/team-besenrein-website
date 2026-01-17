@@ -131,16 +131,22 @@ export default function MultiImageUpload({
 
       const results: { fileName: string; publicUrl: string }[] = [];
 
-      for (let i = 0; i < newFiles.length; i++) {
-        const file = newFiles[i].file!;
-        const result = await uploadProjectImage(
-          projectId, 
-          file, 
-          'detail'
-        );
-        if (!result.success) throw new Error(result.error!);
-        results.push(result);
-      }
+        for (let i = 0; i < newFiles.length; i++) {
+          const file = newFiles[i].file!;
+          const result = await uploadProjectImage(
+            projectId, 
+            file, 
+            'detail'
+          );
+          if (!result.success) throw new Error(result.error!);
+          
+          // FIX: Nur fileName und publicUrl pushen
+          results.push({
+            fileName: result.fileName!,
+            publicUrl: result.publicUrl!
+          });
+        }
+
 
       let newFileIndex = 0;
       const finalImages = images.map(img => {
