@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/api/supabase";
+import { deleteInquiry } from "@/app/actions";
 import {
   Loader2,
   Calendar,
@@ -10,6 +11,7 @@ import {
   Search,
   Filter,
   X,
+  Trash2,
 } from "lucide-react";
 
 type Inquiry = {
@@ -47,6 +49,8 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("alle");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
@@ -91,6 +95,21 @@ export default function AdminDashboard() {
       showToast("Fehler beim Aktualisieren", "error");
     }
     setUpdatingId(null);
+  };
+
+  const handleDelete = async (inquiry: Inquiry) => {
+    setDeletingId(inquiry.id);
+    setConfirmDeleteId(null);
+    const imagePaths = getImagesArray(inquiry);
+    const result = await deleteInquiry(inquiry.id, imagePaths);
+
+    if (result.success) {
+      setInquiries((prev) => prev.filter((i) => i.id !== inquiry.id));
+      showToast("Anfrage erfolgreich gelöscht", "success");
+    } else {
+      showToast("Fehler beim Löschen", "error");
+    }
+    setDeletingId(null);
   };
 
   const getImagesArray = (inquiry: Inquiry): string[] => {
@@ -216,6 +235,8 @@ export default function AdminDashboard() {
             filteredInquiries.map((inquiry) => {
               const safeImages = getImagesArray(inquiry);
               const currentStatus = inquiry.status || "neu";
+              const isConfirming = confirmDeleteId === inquiry.id;
+              const isDeleting = deletingId === inquiry.id;
 
               return (
                 <div
@@ -269,6 +290,40 @@ export default function AdminDashboard() {
                       </select>
                       {updatingId === inquiry.id && (
                         <Loader2 className="h-4 w-4 animate-spin text-sky-500" />
+                      )}
+
+                      {/* Delete Button / Bestätigung */}
+                      {isConfirming ? (
+                        <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5">
+                          <span className="text-xs font-medium text-red-700">
+                            Wirklich löschen?
+                          </span>
+                          <button
+                            onClick={() => handleDelete(inquiry)}
+                            className="rounded-md bg-red-500 px-2 py-0.5 text-xs font-semibold text-white hover:bg-red-600"
+                          >
+                            Ja
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="rounded-md bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-700 hover:bg-slate-300"
+                          >
+                            Nein
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDeleteId(inquiry.id)}
+                          disabled={isDeleting}
+                          className="rounded-lg border border-red-200 p-1.5 text-red-400 transition-all hover:border-red-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                          title="Anfrage löschen"
+                        >
+                          {isDeleting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </button>
                       )}
                     </div>
                   </div>

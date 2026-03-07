@@ -175,3 +175,21 @@ export async function deleteProjectImage(fileName: string) {
     return { success: false, error: (error as Error).message };
   }
 }
+
+export async function deleteInquiry(id: string, imagePaths: string[]) {
+  try {
+    if (imagePaths.length > 0) {
+      await supabase.storage.from('inquiry-images').remove(imagePaths);
+    }
+
+    const { error } = await supabase
+      .from('inquiries')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: (error as Error).message };
+  }
+}
