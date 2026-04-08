@@ -14,7 +14,7 @@ export default function About() {
           <div className="w-full lg:w-1/2 relative">
             <div className="relative aspect-[4/5] w-full max-w-md mx-auto lg:mr-auto rounded-2xl overflow-hidden shadow-xl">
               <Image
-                src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=800"
+                src="/team-besenrein-about.webp"
                 alt="Team Besenrein bei der Arbeit"
                 fill
                 className="object-cover"
