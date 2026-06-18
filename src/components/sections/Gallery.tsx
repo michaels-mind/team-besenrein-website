@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react";
-import { supabase } from "@/lib/api/supabase";
 import { Container } from "@/components/common/Container";
 
 type Project = {
@@ -15,42 +14,42 @@ type Project = {
   images: string[];
 };
 
+// ── HIER PROJEKTE PFLEGEN ──────────────────────────────
+// Bilder unter public/ ablegen, z.B. public/projekte/keller-1.webp
+// cover_image = Vorschaubild, images = weitere Bilder im Lightbox-Slider
+const PROJECTS: Project[] = [
+  {
+    id: "1",
+    category: "Entrümpelung",
+    title: "Kellerentrümpelung Nienburg",
+    description: "Kompletter Keller in einem Tag besenrein geräumt.",
+    cover_image: "/projekte/keller-cover.webp",
+    images: ["/projekte/keller-1.webp", "/projekte/keller-2.webp"],
+  },
+  {
+    id: "2",
+    category: "Garten & Landschaft",
+    title: "Gartenneugestaltung",
+    description: "Verwilderter Garten zurückgeschnitten und neu angelegt.",
+    cover_image: "/projekte/garten-cover.webp",
+    images: ["/projekte/garten-1.webp"],
+  },
+];
+// ───────────────────────────────────────────────────────
+
 export default function Gallery() {
-  const [projects, setProjects] = useState<Project[]>([]);
   const [activeCategory, setActiveCategory] = useState("Alle");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [categories, setCategories] = useState<string[]>(["Alle"]);
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("id, title, category, description, cover_url, detail_urls")
-      .order("created_at", { ascending: false });
-    if (error) {
-      console.error("Fetch projects failed:", error);
-      return;
-    }
-    const projectsData = data.map((p: any) => ({
-      id: p.id,
-      title: p.title,
-      category: p.category,
-      description: p.description,
-      cover_image: p.cover_url,
-      images: p.detail_urls || [],
-    }));
-    setProjects(projectsData);
-    setCategories(["Alle", ...new Set(projectsData.map((p: Project) => p.category))]);
-  };
+  const categories = ["Alle", ...Array.from(new Set(PROJECTS.map((p) => p.category)))];
 
   const filteredProjects =
     activeCategory === "Alle"
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
+      ? PROJECTS
+      : PROJECTS.filter((p) => p.category === activeCategory);
+
+  const allImagesForProject = (project: Project) => [project.cover_image, ...project.images];
 
   const openLightbox = (project: Project, index = 0) => {
     setSelectedProject(project);
@@ -66,18 +65,16 @@ export default function Gallery() {
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedProject) return;
-    const allImages = [selectedProject.cover_image, ...selectedProject.images];
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+    const len = allImagesForProject(selectedProject).length;
+    setCurrentImageIndex((prev) => (prev + 1) % len);
   };
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedProject) return;
-    const allImages = [selectedProject.cover_image, ...selectedProject.images];
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+    const len = allImagesForProject(selectedProject).length;
+    setCurrentImageIndex((prev) => (prev - 1 + len) % len);
   };
-
-  const allImagesForProject = (project: Project) => [project.cover_image, ...project.images];
 
   return (
     <section id="galerie" className="border-t border-slate-200 bg-white py-16 lg:py-24">
@@ -107,7 +104,7 @@ export default function Gallery() {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
             <div
               key={project.id}
@@ -123,7 +120,7 @@ export default function Gallery() {
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                   loading="lazy"
                 />
-                
+
                 <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-500 group-hover:bg-black/30">
                   <Expand className="h-12 w-12 scale-0 text-white opacity-0 drop-shadow-2xl transition-all duration-300 group-hover:scale-100 group-hover:opacity-100" />
                 </div>
@@ -141,7 +138,8 @@ export default function Gallery() {
                     {project.description}
                   </p>
                   <p className="mt-2 text-xs font-medium text-slate-200">
-                    {allImagesForProject(project).length} Bild{allImagesForProject(project).length !== 1 ? "er" : ""}
+                    {allImagesForProject(project).length} Bild
+                    {allImagesForProject(project).length !== 1 ? "er" : ""}
                   </p>
                 </div>
               </div>
@@ -183,7 +181,7 @@ export default function Gallery() {
                 className="object-contain"
                 priority
               />
-              
+
               {allImagesForProject(selectedProject).length > 1 && (
                 <>
                   <button
@@ -211,42 +209,9 @@ export default function Gallery() {
               <p className="mb-8 max-w-lg leading-relaxed text-slate-300 drop-shadow-md">
                 {selectedProject.description}
               </p>
-              
-              <div className="scrollbar-thin scrollbar-thumb-slate-600/50 scrollbar-track-slate-800/20 flex w-full max-w-4xl justify-center gap-3 overflow-x-auto px-2 pb-4">
+
+              <div className="flex w-full max-w-4xl justify-center gap-3 overflow-x-auto px-2 pb-4">
                 {allImagesForProject(selectedProject).map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
-                    className={`relative h-20 w-24 flex-shrink-0 overflow-hidden rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl md:h-24 md:w-28 ${
-                      currentImageIndex === idx
-                        ? "border-4 border-primary scale-105 opacity-100"
-                        : "border-4 border-transparent opacity-70 hover:border-white/50 hover:opacity-100"
-                    }`}
-                    aria-label={`Gehe zu Bild ${idx + 1}`}
-                  >
-                    <Image
-                      src={img}
-                      alt={`Thumbnail ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                      loading="lazy"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    {idx === 0 && (
-                      <span className="absolute -right-2 -top-2 rounded-full bg-primary px-2 py-1 text-xs font-bold text-white">
-                        Cover
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-              <p className="mt-4 text-sm text-slate-400">
-                Bild {currentImageIndex + 1} von {allImagesForProject(selectedProject).length}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
-  );
-}
