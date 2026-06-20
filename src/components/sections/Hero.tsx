@@ -31,18 +31,18 @@ export default function Hero() {
       </div>
 
       <Container className="relative z-10 flex min-h-[80svh] items-stretch py-6 lg:py-8">
-        <div className="relative w-full flex-1 overflow-hidden rounded-3xl shadow-2xl">
-          {/* FOTOS – pro Gerät lädt nur die passende Variante (Art-Direction) */}
+        <div className="relative w-full flex-1 overflow-hidden rounded-3xl bg-primary shadow-2xl">
+          {/* FOTOS – nur Desktop (Mobile = Vollfläche bg-primary) */}
           {SLIDES.map((slide, i) => (
             <picture
               key={slide.mobile}
-              className={`absolute inset-0 transition-opacity duration-700 ${
+              className={`absolute inset-0 hidden transition-opacity duration-700 lg:block ${
                 i === index ? "opacity-100" : "opacity-0"
               }`}
             >
               <source media="(min-width:1024px)" srcSet={slide.desktop} />
               <img
-                src={slide.mobile}
+                src={slide.desktop}
                 alt={`Eindruck ${i + 1}`}
                 loading={i === 0 ? "eager" : "lazy"}
                 fetchPriority={i === 0 ? "high" : "auto"}
@@ -51,12 +51,6 @@ export default function Hero() {
               />
             </picture>
           ))}
-
-          {/* MOBILE: blauer Verlauf unten → oben (Lesbarkeit) */}
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/20 lg:hidden"
-          />
 
           {/* DESKTOP: deckende Farbfläche links mit Diagonale */}
           <div className="absolute inset-0 hidden bg-primary lg:block lg:[clip-path:polygon(0_0,55%_0,42%_100%,0_100%)]" />
@@ -67,8 +61,8 @@ export default function Hero() {
             className="absolute inset-0 hidden bg-primary/30 lg:block lg:[clip-path:polygon(55%_0,65%_0,52%_100%,42%_100%)]"
           />
 
-          {/* TEXT – mobil unten, Desktop links mittig */}
-          <div className="absolute inset-0 flex flex-col justify-end px-8 pb-20 pt-12 text-white sm:px-12 lg:inset-y-0 lg:left-0 lg:w-[50%] lg:justify-center lg:pb-12 lg:pr-16">
+          {/* TEXT – mobil zentriert, Desktop links mittig */}
+          <div className="absolute inset-0 flex flex-col justify-center px-8 py-12 text-white sm:px-12 lg:inset-y-0 lg:left-0 lg:w-[50%] lg:pr-16">
             <span className="mb-6 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white/80">
               <MapPin className="h-5 w-5" />
               Nienburg (Weser)
@@ -79,7 +73,7 @@ export default function Hero() {
               <br />
               besenrein.
               <br />
-              <span className="text-white/60">Dein Chaos. .</span>
+              <span className="text-white/60">Wir räumen auf. Du atmest auf.</span>
             </h1>
 
             <div className="mt-8">
@@ -92,8 +86,8 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Pfeile */}
-          <div className="absolute bottom-5 right-5 z-10 flex gap-2">
+          {/* Pfeile – nur Desktop */}
+          <div className="absolute bottom-5 right-5 z-10 hidden gap-2 lg:flex">
             <button
               onClick={prev}
               aria-label="Vorheriges Bild"
@@ -110,8 +104,8 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Punkte */}
-          <div className="absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+          {/* Punkte – nur Desktop */}
+          <div className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 gap-2 lg:flex">
             {SLIDES.map((_, i) => (
               <button
                 key={i}
