@@ -38,7 +38,7 @@ export function Navbar() {
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="#" className="flex items-center" aria-label="Team Besenrein Startseite">
+        <Link href="#hero" className="flex items-center" aria-label="Team Besenrein Startseite">
           <Image
             src="/logo/besenrein-logo.svg"
             alt="Team Besenrein"

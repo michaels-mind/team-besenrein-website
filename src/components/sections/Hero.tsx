@@ -15,7 +15,7 @@ export default function Hero() {
   const [index, setIndex] = useState(0);
 
   const next = useCallback(() => setIndex((i) => (i + 1) % SLIDES.length), []);
-  const prev = () => setIndex((i) => (i - 1 + SLIDES.length) % SLIDES.length);
+  const prev = useCallback(() => setIndex((i) => (i - 1 + SLIDES.length) % SLIDES.length), []);
 
   useEffect(() => {
     const t = setInterval(next, 8000);
@@ -23,7 +23,7 @@ export default function Hero() {
   }, [next]);
 
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section id="hero" className="relative overflow-hidden bg-white">
       {/* Graue Hintergrund-Diagonalen */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute right-0 top-0 h-[55vh] w-[45vw] bg-slate-200 [clip-path:polygon(100%_0,100%_100%,30%_0)]" />
@@ -31,44 +31,120 @@ export default function Hero() {
       </div>
 
       <Container className="relative z-10 flex min-h-[80svh] items-stretch py-6 lg:py-8">
-        <div className="relative w-full flex-1 overflow-hidden rounded-3xl bg-primary shadow-2xl">
-          {/* FOTOS – nur Desktop (Mobile = Vollfläche bg-primary) */}
-          {SLIDES.map((slide, i) => (
-            <picture
-              key={slide.mobile}
-              className={`absolute inset-0 hidden transition-opacity duration-700 lg:block ${
-                i === index ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <source media="(min-width:1024px)" srcSet={slide.desktop} />
+        {/* ───────── MOBILE: Foto oben (diagonal) + Farbfläche unten ───────── */}
+        <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-primary shadow-2xl lg:hidden">
+          {/* Foto mit diagonaler Unterkante */}
+          <div className="relative h-[44svh] w-full shrink-0 [clip-path:polygon(0_0,100%_0,100%_100%,0_86%)]">
+            {SLIDES.map((slide, i) => (
               <img
-                src={slide.desktop}
+                key={slide.mobile}
+                src={slide.mobile}
                 alt={`Eindruck ${i + 1}`}
                 loading={i === 0 ? "eager" : "lazy"}
                 fetchPriority={i === 0 ? "high" : "auto"}
                 decoding="async"
-                className="h-full w-full object-cover"
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                  i === index ? "opacity-100" : "opacity-0"
+                }`}
               />
-            </picture>
+            ))}
+          </div>
+
+          {/* Text */}
+          <div className="px-6 pt-2 text-white">
+            <span className="inline-flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15">
+                <MapPin className="h-5 w-5" />
+              </span>
+              <span className="text-sm font-bold uppercase tracking-widest text-white/80">
+                Nienburg (Weser)
+              </span>
+            </span>
+
+            <h1 className="mt-5 text-4xl font-extrabold leading-tight sm:text-5xl">
+              Schnell, sauber,
+              <br />
+              besenrein.
+              <br />
+              <span className="text-white/60">Wir räumen auf. Du atmest auf.</span>
+            </h1>
+
+            <div className="mt-7">
+              <Link
+                href="#leistungen"
+                className="inline-flex w-fit items-center rounded-full bg-white px-7 py-3 text-base font-semibold text-primary shadow-md transition-colors hover:bg-white/90"
+              >
+                Unsere Leistungen
+              </Link>
+            </div>
+          </div>
+
+          {/* Slider-Steuerung unten */}
+          <div className="mt-auto flex items-center justify-between px-5 py-5">
+            <button
+              onClick={prev}
+              aria-label="Vorheriges Bild"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+
+            <div className="flex gap-2">
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setIndex(i)}
+                  aria-label={`Zu Bild ${i + 1}`}
+                  className={`h-2.5 rounded-full transition-all ${
+                    i === index ? "w-6 bg-white" : "w-2.5 bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={next}
+              aria-label="Nächstes Bild"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* ───────── DESKTOP: Diagonal-Split (Farbe links, Foto rechts) ───────── */}
+        <div className="relative hidden w-full flex-1 overflow-hidden rounded-3xl bg-primary shadow-2xl lg:block">
+          {SLIDES.map((slide, i) => (
+            <img
+              key={slide.desktop}
+              src={slide.desktop}
+              alt={`Eindruck ${i + 1}`}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+              decoding="async"
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                i === index ? "opacity-100" : "opacity-0"
+              }`}
+            />
           ))}
 
-          {/* DESKTOP: deckende Farbfläche links mit Diagonale */}
-          <div className="absolute inset-0 hidden bg-primary lg:block lg:[clip-path:polygon(0_0,55%_0,42%_100%,0_100%)]" />
+          {/* deckende Farbfläche links mit Diagonale */}
+          <div className="absolute inset-0 bg-primary [clip-path:polygon(0_0,55%_0,42%_100%,0_100%)]" />
 
-          {/* DESKTOP: hellere Diagonale über dem Foto (entlang der Kante) */}
+          {/* hellere Diagonale entlang der Kante */}
           <div
             aria-hidden
-            className="absolute inset-0 hidden bg-primary/30 lg:block lg:[clip-path:polygon(55%_0,65%_0,52%_100%,42%_100%)]"
+            className="absolute inset-0 bg-primary/30 [clip-path:polygon(55%_0,65%_0,52%_100%,42%_100%)]"
           />
 
-          {/* TEXT – mobil zentriert, Desktop links mittig */}
-          <div className="absolute inset-0 flex flex-col justify-center px-8 py-12 text-white sm:px-12 lg:inset-y-0 lg:left-0 lg:w-[50%] lg:pr-16">
+          {/* Text links mittig */}
+          <div className="absolute inset-y-0 left-0 flex w-[50%] flex-col justify-center px-12 pr-16 text-white">
             <span className="mb-6 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white/80">
               <MapPin className="h-5 w-5" />
               Nienburg (Weser)
             </span>
 
-            <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="text-6xl font-extrabold leading-tight">
               Schnell, sauber,
               <br />
               besenrein.
@@ -86,8 +162,8 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Pfeile – nur Desktop */}
-          <div className="absolute bottom-5 right-5 z-10 hidden gap-2 lg:flex">
+          {/* Pfeile */}
+          <div className="absolute bottom-5 right-5 z-10 flex gap-2">
             <button
               onClick={prev}
               aria-label="Vorheriges Bild"
@@ -104,8 +180,8 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Punkte – nur Desktop */}
-          <div className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 gap-2 lg:flex">
+          {/* Punkte */}
+          <div className="absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 gap-2">
             {SLIDES.map((_, i) => (
               <button
                 key={i}
