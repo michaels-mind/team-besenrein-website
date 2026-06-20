@@ -8,6 +8,7 @@ import { z } from "zod";
 import { UploadCloud, X, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { submitInquiry } from "@/app/actions";
 import { Container } from "@/components/common/Container";
+import imageCompression from "browser-image-compression";
 
 const formSchema = z.object({
   name: z.string().min(2, "Bitte geben Sie Ihren Namen an."),
@@ -36,7 +37,7 @@ export function ContactForm() {
   });
 
   const onDrop = (acceptedFiles: File[]) => {
-    setUploadFiles((prev) => [...prev, ...acceptedFiles].slice(0, 5));
+    setUploadFiles((prev) => [...prev, ...acceptedFiles].slice(0, 3));
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -58,7 +59,19 @@ export function ContactForm() {
         formData.append("service", data.service);
         formData.append("message", data.message);
 
-        uploadFiles.forEach((file) => formData.append("images", file));
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+        };
+        for (const file of uploadFiles) {
+          try {
+            const compressed = await imageCompression(file, options);
+            formData.append("images", compressed, file.name);
+          } catch {
+            formData.append("images", file);
+          }
+        }
 
         const result = await submitInquiry(formData);
 
@@ -192,7 +205,7 @@ export function ContactForm() {
                 <UploadCloud className={`h-6 w-6 ${isDragActive ? "text-primary" : "text-slate-400"}`} />
               </div>
               <p className="text-sm font-medium text-slate-700">Klicken zum Auswählen</p>
-              <p className="mt-1 text-xs text-slate-500">oder Bilder hier reinziehen (max. 5MB)</p>
+              <p className="mt-1 text-xs text-slate-500">oder hier reinziehen (max. 3 Bilder)</p>
             </div>
 
             {/* Bilder Liste */}

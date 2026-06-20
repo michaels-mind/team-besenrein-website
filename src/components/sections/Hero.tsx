@@ -1,69 +1,114 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Container } from "@/components/common/Container";
 
+const SLIDES = ["/hero/hero-1.webp", "/hero/hero-2.webp", "/hero/hero-3.webp"];
+
 export default function Hero() {
+  const [index, setIndex] = useState(0);
+
+  const next = useCallback(() => setIndex((i) => (i + 1) % SLIDES.length), []);
+  const prev = () => setIndex((i) => (i - 1 + SLIDES.length) % SLIDES.length);
+
+  useEffect(() => {
+    const t = setInterval(next, 8000);
+    return () => clearInterval(t);
+  }, [next]);
+
   return (
-    <section className="relative overflow-hidden bg-white py-20 lg:py-32">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <Image
-          src="/hero/hero-bild.webp"
-          alt="Hintergrund"
-          fill
-          className="object-cover opacity-10"
-          priority
-        />
+    <section className="relative overflow-hidden bg-white">
+      {/* Graue Hintergrund-Diagonalen */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute right-0 top-0 h-[55vh] w-[45vw] bg-slate-200 [clip-path:polygon(100%_0,100%_100%,30%_0)]" />
+        <div className="absolute bottom-0 left-0 h-[40vh] w-[35vw] bg-slate-200 [clip-path:polygon(0_100%,60%_100%,0_25%)]" />
       </div>
 
-      <Container className="relative z-10 text-center">
-        <div className="mb-8 flex justify-center">
-          <div className="relative h-32 w-80">
+      <Container className="relative z-10 flex min-h-[80svh] items-stretch py-6 lg:py-8">
+        <div className="relative w-full flex-1 overflow-hidden rounded-3xl shadow-2xl">
+          {/* FOTO-REGION (rechts sichtbar) – Slides, full-bleed */}
+          {SLIDES.map((src, i) => (
             <Image
-              src="/logo/besenrein-logo.svg"
-              alt="Team Besenrein Logo"
+              key={src}
+              src={src}
+              alt={`Eindruck ${i + 1}`}
               fill
-              className="object-contain"
-              priority
+              priority={i === 0}
+              sizes="100vw"
+              className={`object-cover transition-opacity duration-700 ${
+                i === index ? "opacity-100" : "opacity-0"
+              }`}
             />
+          ))}
+
+          {/* DECKENDE FARBFLÄCHE LINKS mit Diagonale */}
+          <div className="absolute inset-0 bg-primary lg:[clip-path:polygon(0_0,55%_0,42%_100%,0_100%)]" />
+
+          {/* HELLERE DIAGONALE über dem Foto (entlang der Kante) */}
+          <div
+            aria-hidden
+            className="absolute inset-0 hidden bg-primary/30 lg:block lg:[clip-path:polygon(55%_0,65%_0,52%_100%,42%_100%)]"
+          />
+
+          {/* TEXT */}
+          <div className="absolute inset-y-0 left-0 flex w-full flex-col justify-center px-8 py-12 text-white sm:px-12 lg:w-[50%] lg:pr-16">
+            <span className="mb-6 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white/80">
+              <MapPin className="h-5 w-5" />
+              Nienburg (Weser)
+            </span>
+
+            <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+              Sauber, schnell,
+              <br />
+              besenrein.
+              <br />
+              <span className="text-white/60">Seit über 10 Jahren.</span>
+            </h1>
+
+            <div className="mt-8">
+              <Link
+                href="#leistungen"
+                className="inline-flex w-fit items-center rounded-full bg-white px-7 py-3 text-base font-semibold text-primary shadow-md transition-colors hover:bg-white/90"
+              >
+                Unsere Leistungen
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-          Entrümpelung & Umzüge in{" "}
-          <span className="text-primary">Nienburg & Umgebung</span>
-        </h1>
+          {/* Pfeile */}
+          <div className="absolute bottom-5 right-5 z-10 flex gap-2">
+            <button
+              onClick={prev}
+              aria-label="Vorheriges Bild"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-slate-800 shadow transition-colors hover:bg-white"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={next}
+              aria-label="Nächstes Bild"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-slate-800 shadow transition-colors hover:bg-white"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
 
-        <p className="mx-auto mb-8 max-w-2xl text-lg font-medium text-slate-600">
-          Wir schaffen Platz für Neues. Professionell, diskret und zum garantierten
-          Festpreis. Ihr Partner für Haushaltsauflösungen und Transporte.
-        </p>
-
-        <div className="mb-10 flex flex-wrap justify-center gap-4 text-sm font-medium">
-          <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 shadow-sm text-primary">
-            <CheckCircle className="h-4 w-4" style={{ color: 'var(--color-success)' }} /> 
-            Festpreis-Garantie
-          </span>
-          <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 shadow-sm text-primary">
-            <CheckCircle className="h-4 w-4" style={{ color: 'var(--color-success)' }} /> 
-            Besenreine Übergabe
-          </span>
-          <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 shadow-sm text-primary">
-            <CheckCircle className="h-4 w-4" style={{ color: 'var(--color-success)' }} /> 
-            Kostenlose Besichtigung
-          </span>
-        </div>
-
-        <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <Link href="#kontakt" className="btn-primary">
-            Kostenloses Angebot
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-          <Link href="#leistungen" className="btn-secondary">
-            Leistungen ansehen
-          </Link>
+          {/* Punkte */}
+          <div className="absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+            {SLIDES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                aria-label={`Zu Bild ${i + 1}`}
+                className={`h-2.5 rounded-full transition-all ${
+                  i === index ? "w-6 bg-white" : "w-2.5 bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </Container>
     </section>

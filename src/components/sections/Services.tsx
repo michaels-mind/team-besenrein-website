@@ -1,99 +1,165 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, Truck, Shovel, Hammer, Home } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
+import { Plus, Check } from "lucide-react";
 import { Container } from "@/components/common/Container";
 
 const services = [
   {
     title: "Entrümpelung",
-    description: "Besenreine Räumung von Häusern, Wohnungen und Kellern. Inklusive fachgerechter Entsorgung und Wertanrechnung.",
-    icon: Home,
-    link: "/leistungen/entruempelung",
+    description:
+      "Besenreine Räumung von Häusern, Wohnungen und Kellern – inklusive fachgerechter Entsorgung und Wertanrechnung.",
+    image: "/leistungen/entruempelung.webp",
+    details: [
+      "Wohnungs- & Hausauflösungen",
+      "Keller, Dachboden & Garage",
+      "Messie-Wohnungen (diskret)",
+      "Fachgerechte Entsorgung mit Nachweis",
+      "Wertanrechnung verwertbarer Gegenstände",
+      "Besenreine Übergabe",
+    ],
   },
   {
     title: "Umzüge & Transport",
-    description: "Sicherer Transport Ihrer Möbel und Kartons. Wir kümmern uns um Abbau, Transport und Aufbau am neuen Ort.",
-    icon: Truck,
-    link: "/leistungen/umzug",
+    description:
+      "Sicherer Transport Ihrer Möbel und Kartons. Wir kümmern uns um Abbau, Transport und Aufbau am neuen Ort.",
+    image: "/leistungen/umzug.webp",
+    details: [
+      "Privat- & Firmenumzüge",
+      "Möbel ab- und aufbauen",
+      "Verpackung & Transport",
+      "Transport einzelner Möbelstücke",
+      "Entsorgung von Altmöbeln",
+    ],
   },
   {
     title: "Abriss & Handwerk",
-    description: "Entfernen von Tapeten, Bodenbelägen und nicht-tragenden Wänden. Vorbereitung für Ihre Renovierung.",
-    icon: Hammer,
-    link: "/leistungen/abriss",
+    description:
+      "Entfernen von Tapeten, Bodenbelägen und nicht-tragenden Wänden – die saubere Vorbereitung für Ihre Renovierung.",
+    image: "/leistungen/abriss.webp",
+    details: [
+      "Entkernung von Wohnungen",
+      "Tapeten- & Bodenentfernung",
+      "Abriss nicht-tragender Wände",
+      "Demontage von Einbauten",
+      "Renovierungs-Vorbereitung",
+    ],
   },
   {
     title: "Garten & Landschaft",
-    description: "Grünschnitt, Gartenpflege und Neugestaltung. Wir bringen Ihren Außenbereich wieder in Form.",
-    icon: Shovel,
-    link: "/leistungen/garten",
+    description:
+      "Grünschnitt, Gartenpflege und Neugestaltung. Wir bringen Ihren Außenbereich wieder in Form.",
+    image: "/leistungen/garten.webp",
+    details: [
+      "Grünschnitt & Gartenpflege",
+      "Baum- & Heckenschnitt",
+      "Gartenentrümpelung",
+      "Neugestaltung & Bepflanzung",
+      "Abtransport von Grünschnitt",
+    ],
   },
 ];
 
 export default function Services() {
+  const [open, setOpen] = useState<Set<number>>(new Set());
+
+  const toggle = (i: number) =>
+    setOpen((prev) => {
+      const n = new Set(prev);
+      n.has(i) ? n.delete(i) : n.add(i);
+      return n;
+    });
+
   return (
-    <section 
-      id="leistungen" 
-      className="relative border-t border-slate-200 py-16 lg:py-24 overflow-hidden"
+    <section
+      id="leistungen"
+      className="py-16 lg:py-24"
       style={{
-        backgroundImage: 'url(/images/background-poly.webp)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        background:
+          "linear-gradient(180deg, var(--color-primary-light) 0%, #ffffff 60%)",
       }}
     >
-      
-      {/* Weißer Overlay für Lesbarkeit */}
-      <div className="absolute inset-0 bg-white/40" />
+      <Container>
+        <h2 className="mb-12 text-4xl font-extrabold text-primary lg:text-5xl">
+          Unsere Leistungen
+        </h2>
 
-      <Container className="relative z-10">
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-slate-900">
-            Unsere Leistungen
-          </h2>
-          <p className="mx-auto max-w-2xl text-lg text-slate-600">
-            Vom Dachboden bis zum Garten – wir sind Ihr Partner für Ordnung und Neustart in Nienburg.
-          </p>
-        </div>
+        <div className="space-y-8">
+          {services.map((service, i) => {
+            const isOpen = open.has(i);
+            return (
+              <div
+                key={i}
+                className="overflow-hidden rounded-3xl bg-white p-3 shadow-md md:p-4"
+              >
+                <div className="grid items-stretch gap-2 md:grid-cols-[38%_1fr]">
+                  {/* Foto */}
+                  <div className="relative min-h-[240px] overflow-hidden rounded-2xl">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 38vw"
+                      className="object-cover"
+                    />
+                  </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20"
-            >
-              {/* KORRIGIERT: Icon-Container mit !important für sichere Farbe */}
-              <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
-                <service.icon 
-                  className="h-6 w-6 transition-colors duration-300" 
-                  style={{ 
-                    color: 'var(--color-primary)',
-                    strokeWidth: 2 
-                  }}
-                  strokeWidth={2}
-                />
+                  {/* Text */}
+                  <div className="flex flex-col p-5 md:p-8">
+                    <h3 className="text-3xl font-bold text-slate-900 lg:text-4xl">
+                      {service.title}
+                    </h3>
+
+                    <div className="my-5 h-px w-full bg-slate-200" />
+
+                    <p className="leading-relaxed text-slate-600">
+                      {service.description}
+                    </p>
+
+                    {/* Detailliste (aufklappbar) */}
+                    <div
+                      className={`grid transition-all duration-300 ${
+                        isOpen
+                          ? "mt-6 grid-rows-[1fr] opacity-100"
+                          : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
+                          Leistungen im Detail
+                        </p>
+                        <ul className="grid gap-2 sm:grid-cols-2">
+                          {service.details.map((d, di) => (
+                            <li
+                              key={di}
+                              className="flex items-start gap-2 text-sm text-slate-600"
+                            >
+                              <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                              {d}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* + Button */}
+                    <button
+                      onClick={() => toggle(i)}
+                      aria-label={isOpen ? "Details schließen" : "Details anzeigen"}
+                      className="mt-6 flex h-12 w-12 items-center justify-center self-end rounded-full bg-primary text-white shadow-md transition-all hover:scale-105 hover:bg-[var(--color-primary-hover)]"
+                    >
+                      <Plus
+                        className={`h-6 w-6 transition-transform duration-300 ${
+                          isOpen ? "rotate-45" : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
               </div>
-              
-              <h3 className="mb-3 text-xl font-bold text-slate-900">
-                {service.title}
-              </h3>
-              
-              <p className="mb-6 flex-grow text-slate-600 leading-relaxed">
-                {service.description}
-              </p>
-              
-              <div className="mt-auto">
-                <Link
-                  href="#kontakt"
-                  className="inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-[var(--color-primary-hover)] focus:outline-none focus:underline"
-                >
-                  Angebot anfordern 
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Container>
     </section>

@@ -2,216 +2,97 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, MoveHorizontal } from "lucide-react";
 import { Container } from "@/components/common/Container";
 
-type Project = {
-  id: string;
-  category: string;
-  title: string;
-  description: string;
-  cover_image: string;
-  images: string[];
-};
-
-// ── HIER PROJEKTE PFLEGEN ──────────────────────────────
-// Bilder unter public/ ablegen, z.B. public/projekte/keller-1.webp
-// cover_image = Vorschaubild, images = weitere Bilder im Lightbox-Slider
-const PROJECTS: Project[] = [
-  {
-    id: "1",
-    category: "Entrümpelung",
-    title: "Kellerentrümpelung Nienburg",
-    description: "Kompletter Keller in einem Tag besenrein geräumt.",
-    cover_image: "/projekte/keller-cover.webp",
-    images: ["/projekte/keller-1.webp", "/projekte/keller-2.webp"],
-  },
-  {
-    id: "2",
-    category: "Garten & Landschaft",
-    title: "Gartenneugestaltung",
-    description: "Verwilderter Garten zurückgeschnitten und neu angelegt.",
-    cover_image: "/projekte/garten-cover.webp",
-    images: ["/projekte/garten-1.webp"],
-  },
-];
-// ───────────────────────────────────────────────────────
+const BEFORE = "/projekte/vorher.webp";
+const AFTER = "/projekte/nachher.webp";
 
 export default function Gallery() {
-  const [activeCategory, setActiveCategory] = useState("Alle");
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const categories = ["Alle", ...Array.from(new Set(PROJECTS.map((p) => p.category)))];
-
-  const filteredProjects =
-    activeCategory === "Alle"
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.category === activeCategory);
-
-  const allImagesForProject = (project: Project) => [project.cover_image, ...project.images];
-
-  const openLightbox = (project: Project, index = 0) => {
-    setSelectedProject(project);
-    setCurrentImageIndex(index);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeLightbox = () => {
-    setSelectedProject(null);
-    document.body.style.overflow = "unset";
-  };
-
-  const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!selectedProject) return;
-    const len = allImagesForProject(selectedProject).length;
-    setCurrentImageIndex((prev) => (prev + 1) % len);
-  };
-
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!selectedProject) return;
-    const len = allImagesForProject(selectedProject).length;
-    setCurrentImageIndex((prev) => (prev - 1 + len) % len);
-  };
+  const [pos, setPos] = useState(50);
 
   return (
     <section id="galerie" className="border-t border-slate-200 bg-white py-16 lg:py-24">
       <Container>
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-slate-900 md:text-4xl">Unsere Arbeit</h2>
-          <p className="mx-auto max-w-2xl text-lg text-slate-600">
-            Eindrücke aus echten Projekten. Sauber. Schnell. Besenrein.
-          </p>
-        </div>
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          {/* Emotionaler Text */}
+          <div>
+            <span className="mb-4 inline-block text-sm font-bold uppercase tracking-widest text-primary">
+              Unsere Arbeit
+            </span>
+            <h2 className="mb-6 text-3xl font-bold text-slate-900 lg:text-4xl">
+              Manchmal wird es alleine zu viel.
+            </h2>
+            <p className="mb-4 text-lg leading-relaxed text-slate-600">
+              Eine Wohnung auflösen, einen Keller leeren, einen Garten
+              zurückerobern – das kostet Kraft, Zeit und manchmal Überwindung.
+            </p>
+            <p className="mb-8 text-lg leading-relaxed text-slate-600">
+              Genau dann sind wir da: diskret, schnell und besenrein. Sie rufen
+              an – den Rest übernehmen wir.
+            </p>
+            <Link href="#kontakt" className="btn-primary w-fit">
+              Kostenlos anfragen
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </div>
 
-        {/* Category Tabs */}
-        <div className="mx-auto mb-10 flex max-w-2xl flex-wrap justify-center gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-all ${
-                activeCategory === cat
-                  ? "bg-primary scale-105 text-white shadow-md shadow-primary/25"
-                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:shadow-sm"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredProjects.map((project) => (
+          {/* Vorher / Nachher Slider */}
+          <div className="relative aspect-[4/3] w-full select-none overflow-hidden rounded-3xl shadow-xl ring-1 ring-slate-900/5">
+            {/* Nachher (voll) */}
+            <Image
+              src={AFTER}
+              alt="Nachher"
+              fill
+              sizes="(max-width:1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+            {/* Vorher (geclippt) */}
             <div
-              key={project.id}
-              onClick={() => openLightbox(project)}
-              className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary"
+              className="absolute inset-0 overflow-hidden"
+              style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <Image
-                  src={project.cover_image}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  loading="lazy"
-                />
+              <Image
+                src={BEFORE}
+                alt="Vorher"
+                fill
+                sizes="(max-width:1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
 
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-500 group-hover:bg-black/30">
-                  <Expand className="h-12 w-12 scale-0 text-white opacity-0 drop-shadow-2xl transition-all duration-300 group-hover:scale-100 group-hover:opacity-100" />
-                </div>
+            {/* Labels */}
+            <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-slate-900/70 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              Vorher
+            </span>
+            <span className="pointer-events-none absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              Nachher
+            </span>
 
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/30 to-transparent" />
-
-                <div className="absolute bottom-0 left-0 w-full translate-y-4 p-6 transition-transform duration-500 group-hover:translate-y-0">
-                  <span className="mb-2 inline-block rounded-full border border-white/30 bg-primary px-3 py-1 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
-                    {project.category}
-                  </span>
-                  <h3 className="text-xl font-bold leading-tight text-white drop-shadow-2xl">
-                    {project.title}
-                  </h3>
-                  <p className="mt-1 line-clamp-2 text-sm text-white/90 drop-shadow-md">
-                    {project.description}
-                  </p>
-                  <p className="mt-2 text-xs font-medium text-slate-200">
-                    {allImagesForProject(project).length} Bild
-                    {allImagesForProject(project).length !== 1 ? "er" : ""}
-                  </p>
-                </div>
+            {/* Trennlinie + Griff */}
+            <div
+              className="pointer-events-none absolute inset-y-0 w-0.5 bg-white"
+              style={{ left: `${pos}%` }}
+            >
+              <div className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-lg">
+                <MoveHorizontal className="h-5 w-5" />
               </div>
             </div>
-          ))}
-        </div>
 
-        {filteredProjects.length === 0 && (
-          <div className="col-span-full py-24 text-center">
-            <p className="text-xl text-slate-500">Noch keine Projekte in dieser Kategorie.</p>
+            {/* Unsichtbarer Regler zum Ziehen */}
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={pos}
+              onChange={(e) => setPos(Number(e.target.value))}
+              aria-label="Vorher/Nachher-Regler"
+              className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
+            />
           </div>
-        )}
+        </div>
       </Container>
-
-      {/* Lightbox */}
-      {selectedProject && (
-        <div
-          className="fixed inset-0 z-50 flex animate-in fade-in zoom-in items-center justify-center bg-slate-900/98 p-4 backdrop-blur-md duration-200"
-          onClick={closeLightbox}
-        >
-          <button
-            onClick={closeLightbox}
-            className="absolute right-6 top-6 z-50 scale-100 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-white/30"
-            aria-label="Schließen"
-          >
-            <X className="h-7 w-7" />
-          </button>
-
-          <div
-            className="relative flex w-full max-w-6xl max-h-[95vh] flex-col items-center gap-8 md:flex-row"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative h-[60vh] w-full flex-shrink-0 overflow-hidden rounded-2xl bg-slate-800 shadow-2xl md:h-[70vh] lg:h-[80vh]">
-              <Image
-                src={allImagesForProject(selectedProject)[currentImageIndex]}
-                alt={`${selectedProject.title} - Bild ${currentImageIndex + 1}`}
-                fill
-                sizes="100vw"
-                className="object-contain"
-                priority
-              />
-
-              {allImagesForProject(selectedProject).length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 scale-100 rounded-2xl bg-white/20 p-3 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-white/40"
-                    aria-label="Vorheriges Bild"
-                  >
-                    <ChevronLeft className="h-8 w-8" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 scale-100 rounded-2xl bg-white/20 p-3 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-white/40"
-                    aria-label="Nächstes Bild"
-                  >
-                    <ChevronRight className="h-8 w-8" />
-                  </button>
-                </>
-              )}
-            </div>
-
-            <div className="flex w-full flex-col items-center text-center md:w-auto md:max-w-md">
-              <h3 className="mb-4 text-2xl font-bold text-white drop-shadow-md md:text-3xl">
-                {selectedProject.title}
-              </h3>
-              <p className="mb-8 max-w-lg leading-relaxed text-slate-300 drop-shadow-md">
-                {selectedProject.description}
-              </p>
-
-              <div className="flex w-full max-w-4xl justify-center gap-3 overflow-x-auto px-2 pb-4">
-                {allImagesForProject(selectedProject).map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
+    </section>
+  );
+}

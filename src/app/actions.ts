@@ -1,10 +1,19 @@
 'use server';
 
 import { Resend } from 'resend';
+import { headers } from 'next/headers';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Platzhalter – später anpassen:
+// Spam-Schutz: max. 5 Anfragen pro Stunde je IP
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '1 h'),
+  prefix: 'ratelimit:inquiry',
+});
+
 // FROM muss eine Adresse deiner in Resend verifizierten Domain sein.
 const FROM_EMAIL = process.env.CONTACT_FROM_EMAIL ?? 'Anfrage <anfrage@team-besenrein.de>';
 const TO_EMAIL = process.env.CONTACT_TO_EMAIL ?? 'kontakt@team-besenrein.de';
@@ -18,6 +27,17 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 export async function submitInquiry(formData: FormData) {
+  // Rate-Limit je IP-Adresse
+  const hdrs = await headers();
+  const ip = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonymous';
+  const { success: allowed } = await ratelimit.limit(ip);
+  if (!allowed) {
+    return {
+      success: false,
+      error: 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.',
+    };
+  }
+
   const name = (formData.get('name') as string) ?? '';
   const email = (formData.get('email') as string) ?? '';
   const phone = (formData.get('phone') as string) ?? '';

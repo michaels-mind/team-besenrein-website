@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Mulish } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/common/Navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+const mulish = Mulish({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Team Besenrein | Entrümpelung & Umzüge in Nienburg",
-  description: "Professionelle Entrümpelung, Umzüge und Haushaltsauflösungen zum Festpreis. Sauber, schnell und diskret.",
+  description:
+    "Professionelle Entrümpelung, Umzüge und Haushaltsauflösungen zum Festpreis. Sauber, schnell und diskret.",
 };
 
 export default function RootLayout({
@@ -15,8 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de">
-      <body className={inter.className}>
+    <html lang="de" className="scroll-smooth">
+      <body className={mulish.className}>
+        <Navbar />
         {children}
       </body>
     </html>
