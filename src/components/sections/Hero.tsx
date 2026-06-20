@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Container } from "@/components/common/Container";
 
-const SLIDES = ["/hero/hero-1.webp", "/hero/hero-2.webp", "/hero/hero-3.webp"];
+const SLIDES = [
+  { desktop: "/hero/hero-1.webp", mobile: "/hero/hero-mobile-1.webp" },
+  { desktop: "/hero/hero-2.webp", mobile: "/hero/hero-mobile-2.webp" },
+  { desktop: "/hero/hero-3.webp", mobile: "/hero/hero-mobile-3.webp" },
+];
 
 export default function Hero() {
   const [index, setIndex] = useState(0);
@@ -29,43 +32,54 @@ export default function Hero() {
 
       <Container className="relative z-10 flex min-h-[80svh] items-stretch py-6 lg:py-8">
         <div className="relative w-full flex-1 overflow-hidden rounded-3xl shadow-2xl">
-          {/* FOTO-REGION (rechts sichtbar) – Slides, full-bleed */}
-          {SLIDES.map((src, i) => (
-            <Image
-              key={src}
-              src={src}
-              alt={`Eindruck ${i + 1}`}
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              className={`object-cover transition-opacity duration-700 ${
+          {/* FOTOS – pro Gerät lädt nur die passende Variante (Art-Direction) */}
+          {SLIDES.map((slide, i) => (
+            <picture
+              key={slide.mobile}
+              className={`absolute inset-0 transition-opacity duration-700 ${
                 i === index ? "opacity-100" : "opacity-0"
               }`}
-            />
+            >
+              <source media="(min-width:1024px)" srcSet={slide.desktop} />
+              <img
+                src={slide.mobile}
+                alt={`Eindruck ${i + 1}`}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            </picture>
           ))}
 
-          {/* DECKENDE FARBFLÄCHE LINKS mit Diagonale */}
-          <div className="absolute inset-0 bg-primary lg:[clip-path:polygon(0_0,55%_0,42%_100%,0_100%)]" />
+          {/* MOBILE: blauer Verlauf unten → oben (Lesbarkeit) */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/20 lg:hidden"
+          />
 
-          {/* HELLERE DIAGONALE über dem Foto (entlang der Kante) */}
+          {/* DESKTOP: deckende Farbfläche links mit Diagonale */}
+          <div className="absolute inset-0 hidden bg-primary lg:block lg:[clip-path:polygon(0_0,55%_0,42%_100%,0_100%)]" />
+
+          {/* DESKTOP: hellere Diagonale über dem Foto (entlang der Kante) */}
           <div
             aria-hidden
             className="absolute inset-0 hidden bg-primary/30 lg:block lg:[clip-path:polygon(55%_0,65%_0,52%_100%,42%_100%)]"
           />
 
-          {/* TEXT */}
-          <div className="absolute inset-y-0 left-0 flex w-full flex-col justify-center px-8 py-12 text-white sm:px-12 lg:w-[50%] lg:pr-16">
+          {/* TEXT – mobil unten, Desktop links mittig */}
+          <div className="absolute inset-0 flex flex-col justify-end px-8 pb-20 pt-12 text-white sm:px-12 lg:inset-y-0 lg:left-0 lg:w-[50%] lg:justify-center lg:pb-12 lg:pr-16">
             <span className="mb-6 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white/80">
               <MapPin className="h-5 w-5" />
               Nienburg (Weser)
             </span>
 
             <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-              Sauber, schnell,
+              Schnell, sauber,
               <br />
               besenrein.
               <br />
-              <span className="text-white/60">Seit über 10 Jahren.</span>
+              <span className="text-white/60">Dein Chaos. .</span>
             </h1>
 
             <div className="mt-8">

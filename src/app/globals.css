@@ -31,7 +31,7 @@
   }
 }
 
-@layer utilities {
+@layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-full px-8 py-3 text-base font-semibold text-white shadow-md transition-all duration-300;
     background-color: var(--color-primary);
@@ -52,7 +52,9 @@
   .btn-secondary:hover {
     background-color: var(--color-primary-light);
   }
+}
 
+@layer utilities {
   .text-primary {
     color: var(--color-primary);
   }

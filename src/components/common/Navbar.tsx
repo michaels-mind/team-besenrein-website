@@ -63,31 +63,24 @@ export function Navbar() {
         </nav>
 
         {/* Phone CTA (Desktop) */}
-        <Link
-          href={`tel:${PHONE_LINK}`}
-          className="btn-primary hidden gap-2 !px-6 !py-2.5 lg:inline-flex"
-        >
-          <Phone className="h-4 w-4" />
-          {PHONE_DISPLAY}
-        </Link>
-
-        {/* Mobile: Phone-Icon + Burger */}
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="hidden lg:block">
           <Link
             href={`tel:${PHONE_LINK}`}
-            aria-label="Anrufen"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-md"
+            className="btn-primary gap-2 !px-6 !py-2.5"
           >
-            <Phone className="h-5 w-5" />
+            <Phone className="h-4 w-4" />
+            {PHONE_DISPLAY}
           </Link>
-          <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Menü öffnen"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700"
-          >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
+
+        {/* Mobile: nur Burger */}
+        <button
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Menü öffnen"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 lg:hidden"
+        >
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
 
       {/* Mobile Menu */}
