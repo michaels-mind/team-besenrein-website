@@ -18,7 +18,7 @@ export default function Hero() {
   const prev = useCallback(() => setIndex((i) => (i - 1 + SLIDES.length) % SLIDES.length), []);
 
   useEffect(() => {
-    const t = setInterval(next, 8000);
+    const t = setInterval(next, 3500);
     return () => clearInterval(t);
   }, [next]);
 
@@ -69,12 +69,18 @@ export default function Hero() {
               <span className="text-white/60">Wir räumen auf. Du atmest auf.</span>
             </h1>
 
-            <div className="mt-7">
+            <div className="mt-7 flex flex-col gap-3">
               <Link
                 href="#leistungen"
                 className="inline-flex w-fit items-center rounded-full bg-white px-7 py-3 text-base font-semibold text-primary shadow-md transition-colors hover:bg-white/90"
               >
                 Unsere Leistungen
+              </Link>
+              <Link
+                href="#kontakt"
+                className="inline-flex w-fit items-center rounded-full border border-white/40 px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Jetzt Kontakt aufnehmen
               </Link>
             </div>
           </div>
