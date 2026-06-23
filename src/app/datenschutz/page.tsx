@@ -33,7 +33,34 @@ export default function DatenschutzPage() {
         </section>
 
         <section>
-          <h2 className="mb-2 text-xl font-semibold text-slate-900">2. Hosting</h2>
+          <h2 className="mb-2 text-xl font-semibold text-slate-900">
+            2. Technischer Betrieb der Website (Auftragsverarbeiter)
+          </h2>
+          <p>
+            Der technische Betrieb dieser Website – einschließlich des
+            Kontaktformulars und der nachfolgend genannten Dienste – erfolgt
+            durch einen externen Dienstleister, der ausschließlich in unserem
+            Auftrag und nach unseren Weisungen tätig wird:
+          </p>
+          <p className="mt-2">
+            Michael Benkendorf (Michaels Mind)
+            <br />
+            Rabenhorst 29
+            <br />
+            31582 Nienburg
+            <br />
+            E-Mail: service@michaelsmind.de
+          </p>
+          <p className="mt-2">
+            Mit dem Dienstleister besteht ein Vertrag zur Auftragsverarbeitung
+            gemäß Art. 28 DSGVO. Die nachfolgend genannten Anbieter (Vercel,
+            Resend, Upstash) werden als Unterauftragsverarbeiter eingesetzt; auch
+            mit ihnen bestehen entsprechende Verträge zur Auftragsverarbeitung.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-xl font-semibold text-slate-900">3. Hosting</h2>
           <p>
             Diese Website wird bei einem externen Dienstleister gehostet (Vercel
             Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA). Personenbezogene
@@ -44,16 +71,16 @@ export default function DatenschutzPage() {
             Onlineangebots (Art. 6 Abs. 1 lit. b und f DSGVO).
           </p>
           <p className="mt-2">
-            Mit dem Anbieter besteht ein Vertrag zur Auftragsverarbeitung gemäß
-            Art. 28 DSGVO. Da eine Verarbeitung auch in den USA stattfinden kann,
-            ist dieser Datentransfer zusätzlich durch die Standardvertragsklauseln
-            (SCC) der EU-Kommission abgesichert.
+            Es besteht ein Vertrag zur Auftragsverarbeitung gemäß Art. 28 DSGVO.
+            Da eine Verarbeitung auch in den USA stattfinden kann, ist dieser
+            Datentransfer zusätzlich durch die Standardvertragsklauseln (SCC) der
+            EU-Kommission abgesichert.
           </p>
         </section>
 
         <section>
           <h2 className="mb-2 text-xl font-semibold text-slate-900">
-            3. Server-Log-Dateien
+            4. Server-Log-Dateien
           </h2>
           <p>
             Der Provider der Seiten erhebt und speichert automatisch
@@ -68,21 +95,23 @@ export default function DatenschutzPage() {
 
         <section>
           <h2 className="mb-2 text-xl font-semibold text-slate-900">
-            4. Kontaktformular und E-Mail-Versand
+            5. Kontaktformular und E-Mail-Versand
           </h2>
           <p>
             Wenn Sie uns über das Kontaktformular Anfragen zukommen lassen,
             werden Ihre Angaben aus dem Formular (Name, Telefonnummer,
             E-Mail-Adresse, gewünschte Leistung, Nachricht sowie optional
             hochgeladene Fotos) zwecks Bearbeitung der Anfrage und für den Fall
-            von Anschlussfragen bei uns verarbeitet.
+            von Anschlussfragen bei uns verarbeitet. Optional hochgeladene Fotos
+            werden ausschließlich als Anhang der Anfrage-E-Mail übermittelt und
+            nicht in einer separaten Datenbank gespeichert.
           </p>
           <p className="mt-2">
             Für den Versand dieser Anfragen per E-Mail nutzen wir den Dienst
             Resend (Plus Five Five, Inc., USA / Resend EU). Die Verarbeitung
-            erfolgt in einem Rechenzentrum innerhalb der EU (Region Irland). Mit
-            dem Anbieter besteht ein Vertrag zur Auftragsverarbeitung gemäß
-            Art. 28 DSGVO; eine etwaige Verarbeitung in den USA ist durch
+            erfolgt in einem Rechenzentrum innerhalb der EU (Region Irland). Es
+            besteht ein Vertrag zur Auftragsverarbeitung gemäß Art. 28 DSGVO;
+            eine etwaige Verarbeitung in den USA ist durch
             Standardvertragsklauseln (SCC) abgesichert.
           </p>
           <p className="mt-2">
@@ -97,7 +126,32 @@ export default function DatenschutzPage() {
 
         <section>
           <h2 className="mb-2 text-xl font-semibold text-slate-900">
-            5. SSL- bzw. TLS-Verschlüsselung
+            6. Spam- und Missbrauchsschutz (Rate-Limiting)
+          </h2>
+          <p>
+            Zum Schutz unseres Kontaktformulars vor automatisiertem Missbrauch
+            und Spam begrenzen wir die Anzahl der Anfragen pro IP-Adresse. Hierzu
+            wird Ihre IP-Adresse für kurze Zeit verarbeitet und temporär
+            gespeichert. Wir nutzen dafür den Dienst Upstash (Upstash, Inc.,
+            Delaware, USA).
+          </p>
+          <p className="mt-2">
+            Rechtsgrundlage ist unser berechtigtes Interesse an der Sicherheit
+            und Funktionsfähigkeit unseres Angebots (Art. 6 Abs. 1 lit. f DSGVO).
+          </p>
+          <p className="mt-2">
+            Upstash ist ein US-Anbieter; ein Zugriff aus den USA kann nicht
+            vollständig ausgeschlossen werden. Der Datentransfer ist durch die
+            Standardvertragsklauseln (SCC) der EU-Kommission sowie die
+            Zertifizierung von Upstash unter dem EU-U.S. Data Privacy Framework
+            abgesichert. Es besteht ein Vertrag zur Auftragsverarbeitung gemäß
+            Art. 28 DSGVO.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-xl font-semibold text-slate-900">
+            7. SSL- bzw. TLS-Verschlüsselung
           </h2>
           <p>
             Diese Seite nutzt aus Sicherheitsgründen eine SSL- bzw.
@@ -108,7 +162,7 @@ export default function DatenschutzPage() {
 
         <section>
           <h2 className="mb-2 text-xl font-semibold text-slate-900">
-            6. Ihre Rechte
+            8. Ihre Rechte
           </h2>
           <p>
             Sie haben jederzeit das Recht auf Auskunft (Art. 15 DSGVO),
